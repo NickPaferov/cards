@@ -9,5 +9,9 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 6px;
+  padding: 10px 0;
+}
+
+.logo {
+  display: block;
 }
