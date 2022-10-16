@@ -1,12 +1,18 @@
 import { InferActionTypes } from "./store";
 
-const initialState: AppStateType = {};
+const initialState: AppStateType = {
+  isLoading: false,
+};
 
 export const appReducer = (
-    state = initialState,
-    action: AppActionType
+  state = initialState,
+  action: AppActionType
 ): AppStateType => {
   switch (action.type) {
+    case "APP/SET_IS_LOADING": {
+      return { ...state, ...action.payload };
+    }
+
     default: {
       return state;
     }
@@ -14,9 +20,12 @@ export const appReducer = (
 };
 
 export const appActions = {
-  test: () => ({ type: "APP/TEST" }),
+  setIsLoading: (isLoading: boolean) => ({
+    type: "APP/SET_IS_LOADING" as const,
+    payload: { isLoading },
+  }),
 };
 
-export type AppActionType = InferActionTypes<typeof appActions>;
+export type AppStateType = { isLoading: boolean };
 
-export type AppStateType = {};
+export type AppActionType = InferActionTypes<typeof appActions>;

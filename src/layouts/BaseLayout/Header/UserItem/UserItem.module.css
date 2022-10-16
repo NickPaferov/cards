@@ -1,0 +1,13 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.userName {
+  text-decoration: underline dashed 1px;
+  text-underline-position: under;
+}

@@ -1,0 +1,10 @@
+.wrapper {
+  max-width: 1048px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.center {
+  width: 413px;
+  background-color: red;
+}
