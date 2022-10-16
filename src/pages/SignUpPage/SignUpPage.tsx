@@ -1,6 +1,5 @@
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import {
-  Button,
   FormControl,
   IconButton,
   Input,
@@ -16,13 +15,8 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import { Link } from "react-router-dom";
 import { authThunks } from "../../store/auth-reducer";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { useSnackbar } from "notistack";
-
-type Inputs = {
-  email: string;
-  password: string;
-  confirmPassword: string;
-};
+import { LoadingButton } from "@material-ui/lab";
+import { CheckEmailScreen } from "./CheckEmailScreen/CheckEmailScreen";
 
 const schema = yup.object({
   email: yup.string().required("Email is required").email("Invalid email"),
@@ -39,23 +33,21 @@ const schema = yup.object({
 export const SignUpPage = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isSuccessful, setIsSuccessful] = useState(false);
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
+    getValues,
   } = useForm<Inputs>({
     resolver: yupResolver(schema),
-    defaultValues: {
-      email: "test2@test.com",
-      password: " 123456 ",
-      confirmPassword: " 123456 ",
-    },
   });
   const dispatch = useAppDispatch();
-  const { enqueueSnackbar } = useSnackbar();
 
-  const onSubmit: SubmitHandler<Inputs> = (data) =>
-    dispatch(authThunks.signUp(data, enqueueSnackbar));
+  const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
+    const isSuccessful = await dispatch(authThunks.signUp({ email, password }));
+    setIsSuccessful(isSuccessful);
+  };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
@@ -64,6 +56,10 @@ export const SignUpPage = () => {
   const handleClickShowConfirmPassword = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  if (isSuccessful) {
+    return <CheckEmailScreen email={getValues("email")} />;
+  }
 
   return (
     <div className={s.wrapper}>
@@ -118,9 +114,16 @@ export const SignUpPage = () => {
             />
           </FormControl>
         </div>
-        <Button variant="contained" type="submit" className={s.button}>
+        <LoadingButton
+          type="submit"
+          className={s.button}
+          loading={isSubmitting}
+          loadingPosition="start"
+          variant="contained"
+          startIcon={<></>}
+        >
           Sign Up
-        </Button>
+        </LoadingButton>
       </form>
       <div className={s.signInContainer}>
         <span className={s.signInText}>Already have an account?</span>
@@ -130,4 +133,10 @@ export const SignUpPage = () => {
       </div>
     </div>
   );
+};
+
+type Inputs = {
+  email: string;
+  password: string;
+  confirmPassword: string;
 };

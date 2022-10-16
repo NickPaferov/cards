@@ -30,3 +30,6 @@ export type AppThunk<ReturnType = void> = ThunkAction<
 >;
 
 export type AppThunks = { [key: string]: (...args: any[]) => AppThunk };
+
+// @ts-ignore
+window.store = store;

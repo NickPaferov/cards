@@ -11,7 +11,7 @@ export const Header = () => {
       <Container>
         <div className={s.container}>
           <Link to="">
-            <img src={logo} alt="IT-INCUBATOR" />
+            <img src={logo} alt="IT-INCUBATOR" className={s.logo} />
           </Link>
           {true ? (
             <Button variant="contained" component={Link} to="/signin">

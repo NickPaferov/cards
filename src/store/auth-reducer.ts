@@ -1,4 +1,5 @@
 import { authApi, RegisterParamsType } from "../api/auth-api";
+import { handleApiError } from "../utils/handle-api-error";
 import { appActions } from "./app-reducer";
 import { AppThunk, InferActionTypes } from "./store";
 
@@ -23,17 +24,22 @@ export const authActions = {
 
 export const authThunks = {
   signUp:
-    (data: RegisterParamsType, enqueueSnackbar: any): AppThunk =>
+    (data: RegisterParamsType): AppThunk<Promise<boolean>> =>
     async (dispatch) => {
+      let isSuccessful = false;
+
       dispatch(appActions.setIsLoading(true));
       try {
         await authApi.register(data);
-        enqueueSnackbar("Sign Up successful", {});
-      } catch (e: any) {
-        enqueueSnackbar(e.response.data.error);
+        dispatch(appActions.setSnackbarMessage("Sign up successfully"));
+        isSuccessful = true;
+      } catch (e) {
+        handleApiError(e, dispatch);
       } finally {
         dispatch(appActions.setIsLoading(false));
       }
+
+      return isSuccessful;
     },
 };
 
