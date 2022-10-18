@@ -23,7 +23,7 @@ const schema = yup.object({
   password: yup
     .string()
     .required("Password is required")
-    .min(7, "Password must be more than 7 characters"),
+    .min(8, "Password must be more than 7 characters"),
   confirmPassword: yup
     .string()
     .required("Confirm password is required")
