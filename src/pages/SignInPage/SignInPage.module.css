@@ -1,0 +1,47 @@
+.wrapper {
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.fieldsContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    padding: 40px 0 10px 0;
+}
+
+.button {
+    width: 100%;
+}
+
+.signInContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.form {
+    margin-bottom: 40px;
+}
+
+.signInText {
+    font-weight: 600;
+    opacity: 0.5;
+}
+
+.signInLink {
+    font-weight: 600;
+    font-size: 16px;
+}
+
+
+.forgotPasswordContainer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.forgotPasswordLink {
+    color: black;
+    padding: 0 0 40px 0;
+}

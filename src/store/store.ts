@@ -5,8 +5,9 @@ import {
 } from "redux";
 import thunkMiddleware, { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { AppActionType, appReducer } from "./app-reducer";
+import { AuthActionType, authReducer } from "./auth-reducer";
 
-const rootReducer = combineReducers({ app: appReducer });
+const rootReducer = combineReducers({ app: appReducer, auth: authReducer });
 
 export const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
@@ -18,7 +19,7 @@ export type InferActionTypes<T> = T extends {
   ? U
   : never;
 
-type AppActionsType = AppActionType;
+type AppActionsType = AppActionType | AuthActionType;
 
 export type AppDispatch = ThunkDispatch<RootStateType, unknown, AppActionsType>;
 

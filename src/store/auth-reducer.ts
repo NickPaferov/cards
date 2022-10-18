@@ -1,15 +1,27 @@
-import { authApi, RegisterParamsType } from "../api/auth-api";
+import {
+  authApi,
+  LoginParamsType,
+  LoginResponseType,
+  RegisterParamsType,
+} from "../api/auth-api";
 import { handleApiError } from "../utils/handle-api-error";
 import { appActions } from "./app-reducer";
 import { AppThunk, InferActionTypes } from "./store";
 
-const initialState: AuthStateType = {};
+const initialState: AuthStateType = {
+  user: null,
+};
 
 export const authReducer = (
   state = initialState,
   action: AuthActionType
 ): AuthStateType => {
   switch (action.type) {
+    case "AUTH/SET_USER_DATA":
+      return {
+        ...state,
+        ...action.payload,
+      };
     default: {
       return state;
     }
@@ -17,8 +29,9 @@ export const authReducer = (
 };
 
 export const authActions = {
-  test: () => ({
-    type: "AUTH/TEST" as const,
+  setAuthUserData: (user: LoginResponseType) => ({
+    type: "AUTH/SET_USER_DATA" as const,
+    payload: { user },
   }),
 };
 
@@ -41,8 +54,27 @@ export const authThunks = {
 
       return isSuccessful;
     },
+  signIn:
+    (data: LoginParamsType): AppThunk<Promise<boolean>> =>
+    async (dispatch) => {
+      let isSuccessful = false;
+
+      dispatch(appActions.setIsLoading(true));
+      try {
+        const user = await authApi.login(data);
+        dispatch(authActions.setAuthUserData(user));
+        dispatch(appActions.setSnackbarMessage("Sign in successfully"));
+        isSuccessful = true;
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
+
+      return isSuccessful;
+    },
 };
 
 export type AuthActionType = InferActionTypes<typeof authActions>;
 
-export type AuthStateType = {};
+export type AuthStateType = { user: null | LoginResponseType };
