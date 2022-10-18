@@ -16,12 +16,12 @@ export const Header = () => {
           <Link to="">
             <img src={logo} alt="IT-INCUBATOR" className={s.logo} />
           </Link>
-          {!user ? (
+          {user ? (
+            <UserItem />
+          ) : (
             <Button variant="contained" component={Link} to="/signin">
               Sign in
             </Button>
-          ) : (
-            <UserItem />
           )}
         </div>
       </Container>

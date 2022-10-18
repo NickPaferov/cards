@@ -21,10 +21,7 @@ import { LoadingButton } from "@material-ui/lab";
 
 const schema = yup.object({
   email: yup.string().required("Email is required").email("Invalid email"),
-  password: yup
-    .string()
-    .required("Password is required")
-    .min(7, "Password must be more than 7 characters"),
+  password: yup.string().required("Password is required"),
 });
 
 export const SignInPage = () => {
@@ -36,22 +33,11 @@ export const SignInPage = () => {
     formState: { errors, isSubmitting },
   } = useForm<Inputs>({
     resolver: yupResolver(schema),
-    defaultValues: {
-      email: "",
-      password: "",
-      rememberMe: true,
-    },
   });
   const dispatch = useAppDispatch();
 
-  const onSubmit: SubmitHandler<Inputs> = async ({
-    email,
-    password,
-    rememberMe,
-  }) => {
-    const isSuccessful = await dispatch(
-      authThunks.signIn({ email, password, rememberMe })
-    );
+  const onSubmit: SubmitHandler<Inputs> = async (values) => {
+    const isSuccessful = await dispatch(authThunks.signIn(values));
     setIsSuccessful(isSuccessful);
   };
 

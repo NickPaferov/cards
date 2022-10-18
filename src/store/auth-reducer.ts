@@ -20,7 +20,7 @@ export const authReducer = (
     case "AUTH/SET_USER_DATA":
       return {
         ...state,
-        user: action.payload.user,
+        ...action.payload,
       };
     default: {
       return state;
