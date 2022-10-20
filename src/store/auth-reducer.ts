@@ -3,6 +3,8 @@ import {
   LoginParamsType,
   LoginResponseType,
   RegisterParamsType,
+  ResetParamsType,
+  ResetPasswordType,
 } from "../api/auth-api";
 import { handleApiError } from "../utils/handle-api-error";
 import { appActions } from "./app-reducer";
@@ -64,6 +66,40 @@ export const authThunks = {
         const user = await authApi.login(data);
         dispatch(authActions.setAuthUserData(user));
         dispatch(appActions.setSnackbarMessage("Sign in successfully"));
+        isSuccessful = true;
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
+
+      return isSuccessful;
+    },
+  forgotPassword:
+    (data: ResetParamsType): AppThunk<Promise<boolean>> =>
+    async (dispatch) => {
+      let isSuccessful = false;
+      dispatch(appActions.setIsLoading(true));
+      try {
+        const reset = await authApi.forgotPassword(data);
+        dispatch(appActions.setSnackbarMessage(reset.info));
+        isSuccessful = true;
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
+
+      return isSuccessful;
+    },
+  resetPassword:
+    (data: ResetPasswordType): AppThunk<Promise<boolean>> =>
+    async (dispatch) => {
+      let isSuccessful = false;
+      dispatch(appActions.setIsLoading(true));
+      try {
+        const reset = await authApi.resetPassword(data);
+        dispatch(appActions.setSnackbarMessage(reset.info));
         isSuccessful = true;
       } catch (e) {
         handleApiError(e, dispatch);

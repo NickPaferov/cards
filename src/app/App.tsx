@@ -29,7 +29,10 @@ function App() {
               <Route path="signin" element={<SignInPage />} />
               <Route path="signup" element={<SignUpPage />} />
               <Route path="forgot-password" element={<ForgotPasswordPage />} />
-              <Route path="reset-password" element={<ResetPasswordPage />} />
+              <Route
+                path="reset-password/:id"
+                element={<ResetPasswordPage />}
+              />
             </Route>
 
             <Route element={<BaseLayout center />}>
