@@ -17,7 +17,7 @@ export const authReducer = (
   action: AuthActionType
 ): AuthStateType => {
   switch (action.type) {
-    case "AUTH/SET_USER_DATA":
+    case "AUTH/SET_USER":
       return {
         ...state,
         ...action.payload,
@@ -29,8 +29,8 @@ export const authReducer = (
 };
 
 export const authActions = {
-  setAuthUserData: (user: LoginResponseType) => ({
-    type: "AUTH/SET_USER_DATA" as const,
+  setUser: (user: UserDomainType) => ({
+    type: "AUTH/SET_USER" as const,
     payload: { user },
   }),
 };
@@ -62,7 +62,7 @@ export const authThunks = {
       dispatch(appActions.setIsLoading(true));
       try {
         const user = await authApi.login(data);
-        dispatch(authActions.setAuthUserData(user));
+        dispatch(authActions.setUser(user));
         dispatch(appActions.setSnackbarMessage("Sign in successfully"));
         isSuccessful = true;
       } catch (e) {
@@ -73,8 +73,22 @@ export const authThunks = {
 
       return isSuccessful;
     },
+  logout: (): AppThunk => async (dispatch) => {
+    dispatch(appActions.setIsLoading(true));
+    try {
+      await authApi.logout();
+      dispatch(authActions.setUser(null));
+      dispatch(appActions.setSnackbarMessage("Log out successfully"));
+    } catch (e) {
+      handleApiError(e, dispatch);
+    } finally {
+      dispatch(appActions.setIsLoading(false));
+    }
+  },
 };
+
+type UserDomainType = null | LoginResponseType;
 
 export type AuthActionType = InferActionTypes<typeof authActions>;
 
-export type AuthStateType = { user: null | LoginResponseType };
+export type AuthStateType = { user: UserDomainType };

@@ -5,7 +5,10 @@ export const authApi = {
     (await client.post("auth/register", data)).data,
   login: async (data: LoginParamsType) =>
     (await client.post<LoginResponseType>("auth/login", data)).data,
+  logout: async () => (await client.delete<ResponseType>("auth/me")).data,
 };
+
+type ResponseType<T = {}> = T & { error?: string };
 
 export type RegisterParamsType = {
   email: string;

@@ -19,5 +19,12 @@ export const getDesignTokens = () => ({
         },
       },
     },
+    MuiMenuItem: {
+      styleOverrides: {
+        root: {
+          fontSize: 14,
+        },
+      },
+    },
   },
 });
