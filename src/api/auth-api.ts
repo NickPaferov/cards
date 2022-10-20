@@ -8,7 +8,7 @@ export const authApi = {
   forgotPassword: async (data: ResetParamsType) =>
     (
       await client.post<ResetParamsResponseType>(
-        "https://neko-back.herokuapp.com/2.0/auth/forgot",
+        process.env.REACT_APP_BASE_MAIL_URL as string,
         data
       )
     ).data,
