@@ -12,7 +12,6 @@ import { useAppDispatch } from "../../hooks/useAppDispatch";
 export const ProfilePage = () => {
   const state = useAppSelector<AuthStateType>((state) => state.auth);
   const navigate = useNavigate();
-  debugger;
   const name = state.user?.name;
   console.log(state);
   useEffect(() => {
