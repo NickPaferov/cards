@@ -8,7 +8,7 @@ export const authApi = {
   forgotPassword: async (data: ResetParamsType) =>
     (
       await client.post<ResetParamsResponseType>(
-        process.env.REACT_APP_BASE_MAIL_URL as string,
+        `${process.env.REACT_APP_BASE_MAIL_URL}/auth/forgot`,
         data
       )
     ).data,
