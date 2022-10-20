@@ -12,11 +12,12 @@ import s from "./SignUpPage.module.css";
 import { useForm, SubmitHandler } from "react-hook-form";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { authThunks } from "../../store/auth-reducer";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { LoadingButton } from "@material-ui/lab";
-import { CheckEmailScreen } from "./CheckEmailScreen/CheckEmailScreen";
+import { SuccessfulScreen } from "./SuccessfulScreen/SuccessfulScreen";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 const schema = yup.object({
   email: yup.string().required("Email is required").email("Invalid email"),
@@ -43,6 +44,7 @@ export const SignUpPage = () => {
     resolver: yupResolver(schema),
   });
   const dispatch = useAppDispatch();
+  const isAuth = useAppSelector((state) => !!state.auth.user);
 
   const onSubmit: SubmitHandler<Inputs> = async ({ email, password }) => {
     const isSuccessful = await dispatch(authThunks.signUp({ email, password }));
@@ -57,8 +59,12 @@ export const SignUpPage = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
 
+  if (isAuth) {
+    return <Navigate to="/profile" />;
+  }
+
   if (isSuccessful) {
-    return <CheckEmailScreen email={getValues("email")} />;
+    return <SuccessfulScreen email={getValues("email")} />;
   }
 
   return (
