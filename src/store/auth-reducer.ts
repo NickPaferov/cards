@@ -17,7 +17,7 @@ export const authReducer = (
   action: AuthActionType
 ): AuthStateType => {
   switch (action.type) {
-    case "AUTH/SET_USER_DATA":
+    case "AUTH/SET_USER":
       return {
         ...state,
         ...action.payload,
@@ -30,7 +30,7 @@ export const authReducer = (
 
 export const authActions = {
   setAuthUserData: (user: LoginResponseType) => ({
-    type: "AUTH/SET_USER_DATA" as const,
+    type: "AUTH/SET_USER" as const,
     payload: { user },
   }),
 };
@@ -72,6 +72,24 @@ export const authThunks = {
       }
 
       return isSuccessful;
+    },
+  changeData:
+    (data: { name: string }): AppThunk =>
+    async (dispatch) => {
+      if (!data.name) {
+        return;
+      }
+      dispatch(appActions.setIsLoading(true));
+      try {
+        const user = await authApi.updateProfileData(data);
+        dispatch(authActions.setAuthUserData(user.updatedUser));
+        console.log(user.updatedUser.name);
+        dispatch(appActions.setSnackbarMessage("Change name successfully"));
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
     },
 };
 

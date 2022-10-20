@@ -20,7 +20,7 @@ function App() {
       <SnackbarProvider maxSnack={3}>
         <HashRouter>
           <Routes>
-            <Route path="/" element={<BaseLayout />}>
+            <Route path="/" element={<BaseLayout center wrap />}>
               <Route index element={<HomePage />} />
               <Route path="profile" element={<ProfilePage />} />
             </Route>

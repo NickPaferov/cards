@@ -15,7 +15,7 @@
   width: 100%;
 }
 
-.signInContainer {
+.profileContainer {
   display: flex;
   flex-direction: column;
   gap: 10px;
@@ -25,7 +25,7 @@
   margin-bottom: 40px;
 }
 
-.signInText {
+.textMail {
   font-weight: 600;
   opacity: 0.5;
 }
