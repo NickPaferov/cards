@@ -15,8 +15,7 @@ export const handleApiError = (error: unknown, dispatch: AppDispatch) => {
 
   dispatch(appActions.setSnackbarMessage(message, "error"));
 
-  // TODO: uncomment
-  // isAxiosError &&
-  //   e.response?.status === 401 &&
-  //   dispatch(authActions.setAuthUserData(null));
+  isAxiosError &&
+    e.response?.status === 401 &&
+    dispatch(authActions.setUser(null));
 };
