@@ -1,10 +1,10 @@
 import { Button } from "@mui/material";
-import s from "./CheckEmailScreen.module.css";
+import s from "./SuccessfulScreen.module.css";
 import letter from "../../../assets/images/letter.svg";
 import { Link, Navigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
-export const CheckEmailScreen = ({ email }: PropsType) => {
+export const SuccessfulScreen = ({ email }: PropsType) => {
   const [count, setCount] = useState(5);
 
   useEffect(() => {
