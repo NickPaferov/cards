@@ -85,6 +85,24 @@ export const authThunks = {
       dispatch(appActions.setIsLoading(false));
     }
   },
+  changeData:
+    (data: { name: string }): AppThunk =>
+    async (dispatch) => {
+      if (!data.name) {
+        return;
+      }
+      dispatch(appActions.setIsLoading(true));
+      try {
+        const user = await authApi.updateProfileData(data);
+        dispatch(authActions.setUser(user.updatedUser));
+        console.log(user.updatedUser.name);
+        dispatch(appActions.setSnackbarMessage("Change name successfully"));
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
+    },
 };
 
 type UserDomainType = null | LoginResponseType;

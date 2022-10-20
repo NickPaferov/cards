@@ -5,6 +5,9 @@ export const authApi = {
     (await client.post("auth/register", data)).data,
   login: async (data: LoginParamsType) =>
     (await client.post<LoginResponseType>("auth/login", data)).data,
+  updateProfileData: async (data: ProfileParamsType) =>
+    (await client.put<{ updatedUser: LoginResponseType }>(`/auth/me`, data))
+      .data,
   logout: async () => (await client.delete<ResponseType>("auth/me")).data,
 };
 
@@ -24,6 +27,7 @@ export type LoginParamsType = {
 export type LoginResponseType = {
   _id: string;
   email: string;
+  avatar: string;
   rememberMe: boolean;
   isAdmin: boolean;
   name: string;
@@ -34,4 +38,9 @@ export type LoginResponseType = {
   __v: number;
   token: string;
   tokenDeathTime: number;
+};
+
+export type ProfileParamsType = {
+  name?: string;
+  avatar?: string;
 };
