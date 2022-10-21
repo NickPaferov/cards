@@ -18,6 +18,7 @@ import { Link, Navigate } from "react-router-dom";
 import { authThunks } from "../../store/auth-reducer";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { LoadingButton } from "@material-ui/lab";
+import { useAppSelector } from "../../hooks/useAppSelector";
 
 const schema = yup.object({
   email: yup.string().required("Email is required").email("Invalid email"),
@@ -26,7 +27,6 @@ const schema = yup.object({
 
 export const SignInPage = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isSuccessful, setIsSuccessful] = useState(false);
   const {
     register,
     handleSubmit,
@@ -35,17 +35,17 @@ export const SignInPage = () => {
     resolver: yupResolver(schema),
   });
   const dispatch = useAppDispatch();
+  const isAuth = useAppSelector((state) => !!state.auth.user);
 
-  const onSubmit: SubmitHandler<Inputs> = async (values) => {
-    const isSuccessful = await dispatch(authThunks.signIn(values));
-    setIsSuccessful(isSuccessful);
+  const onSubmit: SubmitHandler<Inputs> = (values) => {
+    dispatch(authThunks.signIn(values));
   };
 
   const handleClickShowPassword = () => {
     setShowPassword(!showPassword);
   };
 
-  if (isSuccessful) {
+  if (isAuth) {
     return <Navigate to="/profile" />;
   }
 

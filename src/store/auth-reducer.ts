@@ -57,23 +57,18 @@ export const authThunks = {
       return isSuccessful;
     },
   signIn:
-    (data: LoginParamsType): AppThunk<Promise<boolean>> =>
+    (data: LoginParamsType): AppThunk =>
     async (dispatch) => {
-      let isSuccessful = false;
-
       dispatch(appActions.setIsLoading(true));
       try {
         const user = await authApi.login(data);
         dispatch(authActions.setUser(user));
         dispatch(appActions.setSnackbarMessage("Sign in successfully"));
-        isSuccessful = true;
       } catch (e) {
         handleApiError(e, dispatch);
       } finally {
         dispatch(appActions.setIsLoading(false));
       }
-
-      return isSuccessful;
     },
   forgotPassword:
     (data: ResetParamsType): AppThunk<Promise<boolean>> =>
