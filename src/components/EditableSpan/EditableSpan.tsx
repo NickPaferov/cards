@@ -1,7 +1,6 @@
-import React, { FC, useCallback, useState } from "react";
+import React, { ChangeEvent, FC, useCallback, useState } from "react";
 import CreateIcon from "@mui/icons-material/Create";
-import { IconButton } from "@mui/material";
-import { Input } from "../Input/Input";
+import { FormControl, IconButton, TextField } from "@mui/material";
 
 type EditableSpanType = {
   title: string;
@@ -10,63 +9,36 @@ type EditableSpanType = {
 
 export const EditableSpan: FC<EditableSpanType> = React.memo(
   ({ title, changeTitle }) => {
-    console.log(title);
-    const [userText, setUserText] = useState<string>(title);
+    const [userText, setUserText] = useState<string>("");
     const [editMode, setEditMode] = useState<boolean>(false);
-    const [error, setError] = useState(false);
+    const onChangeHandler = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+      setUserText(e.currentTarget.value);
+    }, []);
 
-    const addItem = () => {
-      if (userText.trim() !== "") {
-        changeTitle(userText.trim());
-        if (error) setError(false);
-      } else {
-        if (!error) setError(true);
-      }
-    };
     const onEditMode = useCallback(() => {
       setEditMode(true);
       setUserText(title);
     }, [title]);
-
     const offEditMode = useCallback(() => {
-      if (userText == "") {
-        setError(error);
-      } else {
-        setEditMode(false);
-        addItem();
-      }
+      title !== userText && changeTitle(userText);
+      setEditMode(false);
     }, [changeTitle, userText]);
 
     return editMode ? (
       <h3>
-        <Input
-          title={userText}
-          setTitle={setUserText}
-          callBackHandlerForAddItem={addItem}
-          error={error}
-          id={"standard-error-helper-text"}
-          label={error ? "Error" : "Required"}
-          helperText={error ? "Title is required" : "Input title"}
-          setError={setError}
-          disabled={error}
-        />
-        {/*<TextField*/}
-        {/*    id={"standard-error-helper-text"}*/}
-        {/*    // error={error}*/}
-        {/*    style={{maxWidth: '600px'}}*/}
-        {/*    label={error ? 'Error' : 'Required'}*/}
-        {/*    helperText={error ? 'Name is required' : 'Input name'}*/}
-        {/*    value={userText}*/}
-        {/*    variant="standard"*/}
-        {/*    autoFocus={true}*/}
-        {/*    onKeyPress={onKeyPressHandler}*/}
-        {/*    onChange={ onChangeHandler }*/}
-        {/*    // onBlur={offEditMode}*/}
-        {/*    color={'secondary'}*/}
-        {/*/>*/}
+        <FormControl>
+          <TextField
+            id={"standard-error-helper-text"}
+            style={{ maxWidth: "300px" }}
+            value={userText}
+            variant="standard"
+            autoFocus={true}
+            onChange={onChangeHandler}
+            onBlur={offEditMode}
+          />
+        </FormControl>
         <IconButton
           onClick={offEditMode}
-          disabled={error}
           color="primary"
           aria-label="add to shopping cart"
         >

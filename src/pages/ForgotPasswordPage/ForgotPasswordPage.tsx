@@ -26,7 +26,7 @@ export const ForgotPasswordPage = () => {
 
   const onSubmit: SubmitHandler<Inputs> = async ({ email }) => {
     const from = "test-front-admin <ai73a@yandex.by>";
-    const message = `<div style=\"background-color: lime; padding: 15px\">password recovery link:<a href='http://localhost:3000/cards?#/reset-password/$token$'>link</a></div>`;
+    const message = `<div style="background-color: lime; padding: 15px">password recovery link:<a href='http://localhost:3000/cards?#/reset-password/$token$'>link</a></div>`;
 
     const isSuccessful = await dispatch(
       authThunks.forgotPassword({ email, from, message })

@@ -1,5 +1,5 @@
 import { TextField } from "@material-ui/core";
-import React, { KeyboardEvent, ChangeEvent, useCallback } from "react";
+import React, { ChangeEvent, useCallback } from "react";
 
 type InputType = {
   error?: boolean;
@@ -31,15 +31,6 @@ export const Input = React.memo(
       [setError, setTitle]
     );
 
-    const onKeyPressHandler = useCallback(
-      (e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === "Enter") {
-          callBackHandlerForAddItem();
-          setTitle(title);
-        }
-      },
-      [callBackHandlerForAddItem, setTitle]
-    );
     return (
       <TextField
         error={props.error}
@@ -49,7 +40,6 @@ export const Input = React.memo(
         value={title}
         variant="standard"
         onChange={onChangeHandler}
-        onKeyPress={onKeyPressHandler}
       />
     );
   }
