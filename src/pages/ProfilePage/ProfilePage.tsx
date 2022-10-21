@@ -13,13 +13,18 @@ export const ProfilePage = () => {
   const state = useAppSelector<AuthStateType>((state) => state.auth);
   const navigate = useNavigate();
   const name = state.user?.name;
-  console.log(state);
+
   useEffect(() => {
     state.user == null && navigate("/signin");
-  }, [state]);
+  }, [state, navigate]);
   const dispatch = useAppDispatch();
+
   const onChangeName = (name: string) => {
     dispatch(authThunks.changeData({ name }));
+  };
+
+  const handleLogout = () => {
+    dispatch(authThunks.logout());
   };
   return (
     <>
@@ -43,7 +48,7 @@ export const ProfilePage = () => {
               </h3>
               <div className={s.fieldsContainer}></div>
             </FormControl>
-            <Button variant="outlined" color={"inherit"}>
+            <Button onClick={handleLogout} variant="outlined" color={"inherit"}>
               Log out
             </Button>
           </div>
@@ -52,7 +57,3 @@ export const ProfilePage = () => {
     </>
   );
 };
-
-// type Inputs = {
-//     name: string;
-// };
