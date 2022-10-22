@@ -1,6 +1,7 @@
 import { client } from "./client";
 
 export const authApi = {
+  me: async () => (await client.post<LoginResponseType>("auth/me")).data,
   register: async (data: RegisterParamsType) =>
     (await client.post("auth/register", data)).data,
   login: async (data: LoginParamsType) =>
@@ -16,7 +17,7 @@ export const authApi = {
     (await client.post<ResetParamsResponseType>("/auth/set-new-password", data))
       .data,
   updateProfileData: async (data: ProfileParamsType) =>
-    (await client.put<{ updatedUser: LoginResponseType }>(`/auth/me`, data))
+    (await client.put<{ updatedUser: LoginResponseType }>("/auth/me", data))
       .data,
   logout: async () => (await client.delete<ResponseType>("auth/me")).data,
 };
@@ -37,7 +38,7 @@ export type LoginParamsType = {
 export type LoginResponseType = {
   _id: string;
   email: string;
-  avatar: string;
+  avatar?: string;
   rememberMe: boolean;
   isAdmin: boolean;
   name: string;
@@ -48,6 +49,7 @@ export type LoginResponseType = {
   __v: number;
   token: string;
   tokenDeathTime: number;
+  error?: string;
 };
 
 export type ResetParamsType = {

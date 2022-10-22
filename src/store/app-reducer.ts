@@ -1,7 +1,11 @@
 import { VariantType } from "notistack";
-import { InferActionTypes } from "./store";
+import { AppThunk, InferActionTypes } from "./store";
+import { authApi } from "../api/auth-api";
+import { handleApiError } from "../utils/handle-api-error";
+import { authActions } from "./auth-reducer";
 
 const initialState: AppStateType = {
+  isInitialized: false,
   isLoading: false,
   snackbar: { message: null, variant: "default", timestamp: null },
 };
@@ -11,6 +15,10 @@ export const appReducer = (
   action: AppActionType
 ): AppStateType => {
   switch (action.type) {
+    case "APP/SET_IS_INITIALIZED": {
+      return { ...state, ...action.payload };
+    }
+
     case "APP/SET_IS_LOADING": {
       return { ...state, ...action.payload };
     }
@@ -26,6 +34,10 @@ export const appReducer = (
 };
 
 export const appActions = {
+  setIsInitialized: (isInitialized: boolean) => ({
+    type: "APP/SET_IS_INITIALIZED" as const,
+    payload: { isInitialized },
+  }),
   setIsLoading: (isLoading: boolean) => ({
     type: "APP/SET_IS_LOADING" as const,
     payload: { isLoading },
@@ -41,7 +53,21 @@ export const appActions = {
   }),
 };
 
+export const appThunks = {
+  isInitialized: (): AppThunk => async (dispatch) => {
+    try {
+      const user = await authApi.me();
+      dispatch(authActions.setUser(user));
+    } catch (e) {
+      handleApiError(e, dispatch);
+    } finally {
+      dispatch(appActions.setIsInitialized(true));
+    }
+  },
+};
+
 export type AppStateType = {
+  isInitialized: boolean;
   isLoading: boolean;
   snackbar: {
     message: null | string;

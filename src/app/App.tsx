@@ -1,5 +1,5 @@
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useMemo } from "react";
+import { useEffect, useMemo } from "react";
 import { HashRouter, Route, Routes } from "react-router-dom";
 import { BaseLayout } from "../layouts/BaseLayout/BaseLayout";
 import { ForgotPasswordPage } from "../pages/ForgotPasswordPage/ForgotPasswordPage";
@@ -11,9 +11,34 @@ import { SignInPage } from "../pages/SignInPage/SignInPage";
 import { SignUpPage } from "../pages/SignUpPage/SignUpPage";
 import { getDesignTokens } from "../utils/get-design-tokens";
 import { SnackbarProvider } from "notistack";
+import { useAppSelector } from "../hooks/useAppSelector";
+import { CircularProgress } from "@mui/material";
+import { useAppDispatch } from "../hooks/useAppDispatch";
+import { appThunks } from "../store/app-reducer";
 
 function App() {
   const theme = useMemo(() => createTheme(getDesignTokens()), []);
+  const isInitialized = useAppSelector((state) => state.app.isInitialized);
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(appThunks.isInitialized());
+  }, []);
+
+  if (!isInitialized) {
+    return (
+      <div
+        style={{
+          position: "fixed",
+          top: "45%",
+          textAlign: "center",
+          width: "100%",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
 
   return (
     <ThemeProvider theme={theme}>
