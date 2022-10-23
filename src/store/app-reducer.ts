@@ -1,7 +1,6 @@
 import { VariantType } from "notistack";
 import { AppThunk, InferActionTypes } from "./store";
 import { authApi } from "../api/auth-api";
-import { handleApiError } from "../utils/handle-api-error";
 import { authActions } from "./auth-reducer";
 
 const initialState: AppStateType = {
@@ -54,12 +53,11 @@ export const appActions = {
 };
 
 export const appThunks = {
-  isInitialized: (): AppThunk => async (dispatch) => {
+  initialize: (): AppThunk => async (dispatch) => {
     try {
       const user = await authApi.me();
       dispatch(authActions.setUser(user));
     } catch (e) {
-      handleApiError(e, dispatch);
     } finally {
       dispatch(appActions.setIsInitialized(true));
     }

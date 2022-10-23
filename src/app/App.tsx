@@ -22,7 +22,7 @@ function App() {
   const dispatch = useAppDispatch();
 
   useEffect(() => {
-    dispatch(appThunks.isInitialized());
+    dispatch(appThunks.initialize());
   }, []);
 
   if (!isInitialized) {
