@@ -1,7 +1,6 @@
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthStateType, authThunks } from "../../store/auth-reducer";
+import { Navigate, useNavigate } from "react-router-dom";
+import { authThunks, UserDomainType } from "../../store/auth-reducer";
 import s from "../ProfilePage/ProfilePage.module.css";
 import { EditableSpan } from "../../components/EditableSpan/EditableSpan";
 import { Button, FormControl, IconButton } from "@mui/material";
@@ -10,13 +9,10 @@ import mockUserPic from "../../assets/images/mock-user-pic.jpg";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 
 export const ProfilePage = () => {
-  const state = useAppSelector<AuthStateType>((state) => state.auth);
+  let user = useAppSelector<UserDomainType>((state) => state.auth.user);
+  let name = user?.name;
+  let email = user?.email;
   const navigate = useNavigate();
-  const name = state.user?.name;
-
-  useEffect(() => {
-    state.user == null && navigate("/signin");
-  }, [state, navigate]);
   const dispatch = useAppDispatch();
 
   const onChangeName = (name: string) => {
@@ -26,6 +22,10 @@ export const ProfilePage = () => {
   const handleLogout = () => {
     dispatch(authThunks.logout());
   };
+  if (!name) {
+    return <Navigate to="/signin" />;
+  }
+
   return (
     <>
       <IconButton onClick={() => navigate("/")} color="default">
@@ -43,7 +43,7 @@ export const ProfilePage = () => {
               </div>
               <h3>
                 <p className={s.textMail} color={"0f172a"}>
-                  {state.user?.email}
+                  {email}
                 </p>
               </h3>
               <div className={s.fieldsContainer}></div>

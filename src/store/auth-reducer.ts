@@ -141,7 +141,7 @@ export const authThunks = {
     },
 };
 
-type UserDomainType = null | LoginResponseType;
+export type UserDomainType = null | LoginResponseType;
 
 export type AuthActionType = InferActionTypes<typeof authActions>;
 
