@@ -1,25 +1,43 @@
-import { client } from "./client";
+import { instance } from "./instance";
 
 export const authApi = {
-  me: async () => (await client.post<LoginResponseType>("auth/me")).data,
-  register: async (data: RegisterParamsType) =>
-    (await client.post("auth/register", data)).data,
-  login: async (data: LoginParamsType) =>
-    (await client.post<LoginResponseType>("auth/login", data)).data,
-  forgotPassword: async (data: ResetParamsType) =>
-    (
-      await client.post<ResetParamsResponseType>(
-        `${process.env.REACT_APP_BASE_MAIL_URL}/auth/forgot`,
-        data
-      )
-    ).data,
-  resetPassword: async (data: ResetPasswordType) =>
-    (await client.post<ResetParamsResponseType>("/auth/set-new-password", data))
-      .data,
-  updateProfileData: async (data: ProfileParamsType) =>
-    (await client.put<{ updatedUser: LoginResponseType }>("/auth/me", data))
-      .data,
-  logout: async () => (await client.delete<ResponseType>("auth/me")).data,
+  me: async () => {
+    const res = await instance.post<LoginResponseType>("auth/me");
+    return res.data;
+  },
+  register: async (data: RegisterParamsType) => {
+    const res = await instance.post("auth/register", data);
+    return res.data;
+  },
+  login: async (data: LoginParamsType) => {
+    const res = await instance.post<LoginResponseType>("auth/login", data);
+    return res.data;
+  },
+  forgotPassword: async (data: ResetParamsType) => {
+    const res = await instance.post<ResetParamsResponseType>(
+      `${process.env.REACT_APP_BASE_MAIL_URL}/auth/forgot`,
+      data
+    );
+    return res.data;
+  },
+  resetPassword: async (data: ResetPasswordType) => {
+    const res = await instance.post<ResetParamsResponseType>(
+      "/auth/set-new-password",
+      data
+    );
+    return res.data;
+  },
+  updateProfileData: async (data: ProfileParamsType) => {
+    const res = await instance.put<{ updatedUser: LoginResponseType }>(
+      "/auth/me",
+      data
+    );
+    return res.data;
+  },
+  logout: async () => {
+    const res = await instance.delete<ResponseType>("auth/me");
+    return res.data;
+  },
 };
 
 type ResponseType<T = {}> = T & { error?: string };

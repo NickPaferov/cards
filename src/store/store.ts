@@ -6,8 +6,15 @@ import {
 import thunkMiddleware, { ThunkAction, ThunkDispatch } from "redux-thunk";
 import { AppActionType, appReducer } from "./app-reducer";
 import { AuthActionType, authReducer } from "./auth-reducer";
+import { PacksActionType, packsReducer } from "./packs-reducer";
+import { CardsActionType, cardsReducer } from "./cards-reducer";
 
-const rootReducer = combineReducers({ app: appReducer, auth: authReducer });
+const rootReducer = combineReducers({
+  app: appReducer,
+  auth: authReducer,
+  packs: packsReducer,
+  cards: cardsReducer,
+});
 
 export const store = createStore(rootReducer, applyMiddleware(thunkMiddleware));
 
@@ -19,7 +26,11 @@ export type InferActionTypes<T> = T extends {
   ? U
   : never;
 
-type AppActionsType = AppActionType | AuthActionType;
+type AppActionsType =
+  | AppActionType
+  | AuthActionType
+  | PacksActionType
+  | CardsActionType;
 
 export type AppDispatch = ThunkDispatch<RootStateType, unknown, AppActionsType>;
 

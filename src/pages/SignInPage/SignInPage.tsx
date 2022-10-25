@@ -79,8 +79,8 @@ export const SignInPage = () => {
             />
           </FormControl>
           <FormControlLabel
-            label="Remember me"
             control={<Checkbox defaultChecked />}
+            label="Remember me"
             {...register("rememberMe")}
           />
         </div>
