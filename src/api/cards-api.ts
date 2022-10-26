@@ -1,23 +1,23 @@
-import { instance } from "./instance";
+import { apiClient } from "./apiClient";
 
 export const cardsApi = {
   getCards: async (packId: string, params: CardsQueryParamsType) => {
-    const res = await instance.get<CardsResponseType>(
+    const res = await apiClient.get<CardsResponseType>(
       `cards/card?cardsPack_id =${packId}`,
       { params }
     );
     return res.data;
   },
   createCard: async (card: CreateCardParamsType) => {
-    const res = await instance.post("cards/card", { card });
+    const res = await apiClient.post("cards/card", { card });
     return res.data;
   },
   deleteCard: async (cardId: string) => {
-    const res = await instance.delete(`cards/card?id=${cardId}`);
+    const res = await apiClient.delete(`cards/card?id=${cardId}`);
     return res.data;
   },
   updateCard: async (card: UpdateCardParamsType) => {
-    const res = await instance.put("cards/card", { card });
+    const res = await apiClient.put("cards/card", { card });
     return res.data;
   },
 };

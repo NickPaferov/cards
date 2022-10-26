@@ -1,41 +1,41 @@
-import { instance } from "./instance";
+import { apiClient } from "./apiClient";
 
 export const authApi = {
   me: async () => {
-    const res = await instance.post<LoginResponseType>("auth/me");
+    const res = await apiClient.post<LoginResponseType>("auth/me");
     return res.data;
   },
   register: async (data: RegisterParamsType) => {
-    const res = await instance.post("auth/register", data);
+    const res = await apiClient.post("auth/register", data);
     return res.data;
   },
   login: async (data: LoginParamsType) => {
-    const res = await instance.post<LoginResponseType>("auth/login", data);
+    const res = await apiClient.post<LoginResponseType>("auth/login", data);
     return res.data;
   },
   forgotPassword: async (data: ResetParamsType) => {
-    const res = await instance.post<ResetParamsResponseType>(
+    const res = await apiClient.post<ResetParamsResponseType>(
       `${process.env.REACT_APP_BASE_MAIL_URL}/auth/forgot`,
       data
     );
     return res.data;
   },
   resetPassword: async (data: ResetPasswordType) => {
-    const res = await instance.post<ResetParamsResponseType>(
+    const res = await apiClient.post<ResetParamsResponseType>(
       "/auth/set-new-password",
       data
     );
     return res.data;
   },
   updateProfileData: async (data: ProfileParamsType) => {
-    const res = await instance.put<{ updatedUser: LoginResponseType }>(
+    const res = await apiClient.put<{ updatedUser: LoginResponseType }>(
       "/auth/me",
       data
     );
     return res.data;
   },
   logout: async () => {
-    const res = await instance.delete<ResponseType>("auth/me");
+    const res = await apiClient.delete<ResponseType>("auth/me");
     return res.data;
   },
 };
