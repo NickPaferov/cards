@@ -9,7 +9,7 @@ import {
 } from "../api/cards-api";
 
 const initialState = {
-  cardsState: {
+  cardsData: {
     cards: [] as CardType[],
   } as CardsResponseType,
   queryParams: {
@@ -27,7 +27,7 @@ export const cardsReducer = (
 ): CardsStateType => {
   switch (action.type) {
     case "CARDS/SET-CARDS":
-      return { ...state, cardsState: action.payload.cards };
+      return { ...state, cardsData: action.payload.cards };
     case "CARDS/SET-CARD-NAME-FILTER":
       return {
         ...state,

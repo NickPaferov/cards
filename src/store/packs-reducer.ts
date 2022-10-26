@@ -9,7 +9,7 @@ import { appActions } from "./app-reducer";
 import { handleApiError } from "../utils/handle-api-error";
 
 const initialState = {
-  packs: {
+  packsData: {
     cardPacks: [] as PackType[],
   } as PacksResponseType,
   queryParams: {
@@ -28,7 +28,7 @@ export const packsReducer = (
 ): PacksStateType => {
   switch (action.type) {
     case "PACKS/SET-PACKS":
-      return { ...state, packs: action.payload.packs };
+      return { ...state, packsData: action.payload.packs };
     case "PACKS/SET-PACK-NAME-FILTER":
       return {
         ...state,
