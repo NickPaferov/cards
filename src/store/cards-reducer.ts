@@ -123,14 +123,14 @@ export const curdsThunks = {
         dispatch(appActions.setIsLoading(false));
       }
     },
-  changeCardName:
+  updateCard:
     (packId: string, cardId: string): AppThunk =>
     async (dispatch) => {
       dispatch(appActions.setIsLoading(true));
       try {
         await cardsApi.updateCard({ _id: cardId, question: "new question " });
         dispatch(curdsThunks.fetchCards(packId));
-        dispatch(appActions.setSnackbarMessage("Card's name changed"));
+        dispatch(appActions.setSnackbarMessage("Card updated"));
       } catch (e) {
         handleApiError(e, dispatch);
       } finally {
