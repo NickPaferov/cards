@@ -1,12 +1,18 @@
+import { PaletteMode } from "@mui/material";
 import { VariantType } from "notistack";
-import { AppThunk, InferActionTypes } from "./store";
 import { authApi } from "../api/auth-api";
 import { authActions } from "./auth-reducer";
+import { AppThunk, InferActionTypes } from "./store";
+
+const paletteMode =
+  localStorage.getItem("paletteMode") === "dark" ? "dark" : "light";
 
 const initialState: AppStateType = {
-  isInitialized: false,
+  loadingProcesses: 0,
   isLoading: false,
-  snackbar: { message: null, variant: "default", timestamp: null },
+  snackbar: { message: null, variant: "default" },
+  isInit: false,
+  paletteMode,
 };
 
 export const appReducer = (
@@ -14,16 +20,31 @@ export const appReducer = (
   action: AppActionType
 ): AppStateType => {
   switch (action.type) {
-    case "APP/SET_IS_INITIALIZED": {
-      return { ...state, ...action.payload };
-    }
-
     case "APP/SET_IS_LOADING": {
-      return { ...state, ...action.payload };
+      const loadingProcesses = action.payload.isLoading
+        ? state.loadingProcesses + 1
+        : state.loadingProcesses - 1;
+      const isLoading = !!loadingProcesses;
+
+      return { ...state, loadingProcesses, isLoading };
     }
 
     case "APP/SET_SNACKBAR_MESSAGE": {
-      return { ...state, ...action.payload };
+      return {
+        ...state,
+        snackbar: action.payload,
+      };
+    }
+
+    case "APP/SET_IS_INIT": {
+      return { ...state, isInit: true };
+    }
+
+    case "APP/TOGGLE_PALETTE_MODE": {
+      return {
+        ...state,
+        paletteMode: state.paletteMode === "light" ? "dark" : "light",
+      };
     }
 
     default: {
@@ -33,45 +54,49 @@ export const appReducer = (
 };
 
 export const appActions = {
-  setIsInitialized: (isInitialized: boolean) => ({
-    type: "APP/SET_IS_INITIALIZED" as const,
-    payload: { isInitialized },
-  }),
   setIsLoading: (isLoading: boolean) => ({
     type: "APP/SET_IS_LOADING" as const,
     payload: { isLoading },
   }),
   setSnackbarMessage: (
-    snackbarMessage: string,
+    message: null | string = null,
     variant: VariantType = "default"
   ) => ({
     type: "APP/SET_SNACKBAR_MESSAGE" as const,
     payload: {
-      snackbar: { message: snackbarMessage, variant, timestamp: Date.now() },
+      message,
+      variant,
     },
+  }),
+  setIsInit: () => ({
+    type: "APP/SET_IS_INIT" as const,
+  }),
+  toggleAppTheme: () => ({
+    type: "APP/TOGGLE_PALETTE_MODE" as const,
   }),
 };
 
 export const appThunks = {
-  initialize: (): AppThunk => async (dispatch) => {
+  init: (): AppThunk => async (dispatch) => {
     try {
-      const user = await authApi.me();
+      const user = await authApi.getUser();
       dispatch(authActions.setUser(user));
     } catch (e) {
     } finally {
-      dispatch(appActions.setIsInitialized(true));
+      dispatch(appActions.setIsInit());
     }
   },
 };
 
 export type AppStateType = {
-  isInitialized: boolean;
+  loadingProcesses: number;
   isLoading: boolean;
   snackbar: {
     message: null | string;
     variant: VariantType;
-    timestamp: null | number;
   };
+  isInit: boolean;
+  paletteMode: PaletteMode;
 };
 
 export type AppActionType = InferActionTypes<typeof appActions>;

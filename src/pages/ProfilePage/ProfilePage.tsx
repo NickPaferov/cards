@@ -1,59 +1,67 @@
-import { useAppSelector } from "../../hooks/useAppSelector";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import { AuthStateType, authThunks } from "../../store/auth-reducer";
-import s from "../ProfilePage/ProfilePage.module.css";
-import { EditableSpan } from "../../components/EditableSpan/EditableSpan";
-import { Button, FormControl, IconButton } from "@mui/material";
-import KeyboardBackspaceIcon from "@mui/icons-material/KeyboardBackspace";
-import mockUserPic from "../../assets/images/mock-user-pic.jpg";
+import styled from "@emotion/styled";
+import { Logout } from "@mui/icons-material";
+import { Button } from "@mui/material";
+import { Navigate } from "react-router-dom";
+import { PATHS } from "../../app/AppRoutes";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
+import { useAppSelector } from "../../hooks/useAppSelector";
+import { authThunks } from "../../store/auth-reducer";
+import { UserpicChooser } from "./UserpicChooser";
+import userPic from "../../assets/images/mock-user-pic.png";
+import { Editable } from "../../components/Editable";
+
+const Wrapper = styled.div`
+  text-align: center;
+`;
+
+const PresonalInfoContainer = styled.div`
+  margin: 30px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+`;
+
+const Email = styled.span`
+  color: var(--text-color2);
+`;
 
 export const ProfilePage = () => {
-  const state = useAppSelector<AuthStateType>((state) => state.auth);
-  const navigate = useNavigate();
-  const name = state.user?.name;
-
-  useEffect(() => {
-    state.user == null && navigate("/signin");
-  }, [state, navigate]);
+  const user = useAppSelector((state) => state.auth.user);
   const dispatch = useAppDispatch();
 
-  const onChangeName = (name: string) => {
-    dispatch(authThunks.changeData({ name }));
+  const handleLogout = () => {
+    dispatch(authThunks.signout());
   };
 
-  const handleLogout = () => {
-    dispatch(authThunks.logout());
+  const handleEditName = async (name: string) => {
+    const isSuccessful = dispatch(authThunks.updateUser({ name }));
+
+    return isSuccessful;
   };
+
+  if (!user) {
+    return <Navigate to={PATHS.signin} />;
+  }
+
   return (
-    <>
-      <IconButton onClick={() => navigate("/")} color="default">
-        <KeyboardBackspaceIcon fontSize={"small"} color={"disabled"} />
-        <p color={"0f172a"}> Back to Packs List</p>
-      </IconButton>
-      <div className={s.wrapper}>
-        <h1>Profile</h1>
-        <form className={s.form}>
-          <div className={s.fieldsContainer}>
-            <FormControl variant="standard">
-              <div className={s.renameContainer}>
-                <img src={mockUserPic} alt="Ivan" width={"200px"} />
-                <EditableSpan title={name!} changeTitle={onChangeName} />
-              </div>
-              <h3>
-                <p className={s.textMail} color={"0f172a"}>
-                  {state.user?.email}
-                </p>
-              </h3>
-              <div className={s.fieldsContainer}></div>
-            </FormControl>
-            <Button onClick={handleLogout} variant="outlined" color={"inherit"}>
-              Log out
-            </Button>
-          </div>
-        </form>
-      </div>
-    </>
+    <Wrapper>
+      <h1>Personal Information</h1>
+      <PresonalInfoContainer>
+        <UserpicChooser image={userPic} imageDescription={user.name} />
+        <Editable
+          label="Nickname"
+          initialValue={user.name}
+          buttonText="save"
+          emptyValueErrorText="Nickname is required"
+          onEdit={handleEditName}
+          fullWidth
+        />
+        <Email>{user.email}</Email>
+      </PresonalInfoContainer>
+      <Button variant="outlined" startIcon={<Logout />} onClick={handleLogout}>
+        Log out
+      </Button>
+    </Wrapper>
   );
 };

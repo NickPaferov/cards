@@ -1,28 +1,33 @@
-import { client } from "./client";
+import { apiClient } from "./api-client";
 
 export const authApi = {
-  me: async () => (await client.post<LoginResponseType>("auth/me")).data,
-  register: async (data: RegisterParamsType) =>
-    (await client.post("auth/register", data)).data,
-  login: async (data: LoginParamsType) =>
-    (await client.post<LoginResponseType>("auth/login", data)).data,
-  forgotPassword: async (data: ResetParamsType) =>
+  signup: async (values: RegisterParamsType) =>
+    (await apiClient.post("auth/register", values)).data,
+  signin: async (values: LoginParamsType) =>
+    (await apiClient.post<LoginResponseType>("auth/login", values)).data,
+  signout: async () => (await apiClient.delete("auth/me")).data,
+  getUser: async () =>
+    (await apiClient.post<LoginResponseType>("auth/me")).data,
+  sendRestorePasswordToken: async (
+    values: SendRestorePasswordTokenParamsType
+  ) =>
     (
-      await client.post<ResetParamsResponseType>(
+      await apiClient.post(
         `${process.env.REACT_APP_BASE_MAIL_URL}/auth/forgot`,
-        data
+        values
       )
     ).data,
-  resetPassword: async (data: ResetPasswordType) =>
-    (await client.post<ResetParamsResponseType>("/auth/set-new-password", data))
+  setNewPassword: async (values: SetNewPasswordParamsType) =>
+    (
+      await apiClient.post(
+        `${process.env.REACT_APP_BASE_MAIL_URL}/auth/set-new-password`,
+        values
+      )
+    ).data,
+  updateUser: async (values: UpdateUserParamsType) =>
+    (await apiClient.put<{ updatedUser: LoginResponseType }>("auth/me", values))
       .data,
-  updateProfileData: async (data: ProfileParamsType) =>
-    (await client.put<{ updatedUser: LoginResponseType }>("/auth/me", data))
-      .data,
-  logout: async () => (await client.delete<ResponseType>("auth/me")).data,
 };
-
-type ResponseType<T = {}> = T & { error?: string };
 
 export type RegisterParamsType = {
   email: string;
@@ -35,10 +40,9 @@ export type LoginParamsType = {
   rememberMe: boolean;
 };
 
-export type LoginResponseType = {
+export type UserType = {
   _id: string;
   email: string;
-  avatar?: string;
   rememberMe: boolean;
   isAdmin: boolean;
   name: string;
@@ -49,26 +53,23 @@ export type LoginResponseType = {
   __v: number;
   token: string;
   tokenDeathTime: number;
-  error?: string;
+  avatar?: string;
 };
 
-export type ResetParamsType = {
+type LoginResponseType = UserType;
+
+export type SendRestorePasswordTokenParamsType = {
   email: string;
   from: string;
   message: string;
 };
 
-export type ResetParamsResponseType = {
-  info: string;
-  error: string;
-};
-
-export type ResetPasswordType = {
+export type SetNewPasswordParamsType = {
   password: string;
   resetPasswordToken: string;
 };
 
-export type ProfileParamsType = {
+export type UpdateUserParamsType = {
   name?: string;
   avatar?: string;
 };

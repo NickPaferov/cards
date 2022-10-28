@@ -1,72 +1,56 @@
-import { TextField } from "@mui/material";
-import s from "./ForgotPasswordPage.module.css";
-import { useForm, SubmitHandler } from "react-hook-form";
-import * as yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-import { authThunks } from "../../store/auth-reducer";
-import { useAppDispatch } from "../../hooks/useAppDispatch";
-import { LoadingButton } from "@material-ui/lab";
+import { Link } from "react-router-dom";
+import styled from "@emotion/styled";
+import { ForgotPasswordForm } from "./ForgotPasswordForm";
+import { PATHS } from "../../app/AppRoutes";
 import { useState } from "react";
-import { Navigate } from "react-router-dom";
+import { CheckEmailScreen } from "./CheckEmailScreen";
 
-const schema = yup.object({
-  email: yup.string().required("Email is required").email("Invalid email"),
-});
+const Wrapper = styled.div`
+  text-align: center;
+`;
+
+const FormContainer = styled.div`
+  margin-bottom: 40px;
+`;
+
+const TryLoggingInContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+`;
+
+const SignInText = styled.span`
+  font-weight: var(--fw3);
+  color: var(--text-color2);
+`;
+
+const SignInLink = styled(Link)`
+  font-weight: var(--fw3);
+  font-size: 16px;
+`;
 
 export const ForgotPasswordPage = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<Inputs>({
-    resolver: yupResolver(schema),
-  });
-  const [isSuccessful, setIsSuccessful] = useState(false);
-  const dispatch = useAppDispatch();
+  const [successfullEmail, setSuccessfullEmail] = useState<null | string>(null);
 
-  const onSubmit: SubmitHandler<Inputs> = async ({ email }) => {
-    const from = "test-front-admin <ai73a@yandex.by>";
-    const message = `<div style="background-color: lime; padding: 15px">password recovery link:<a href='http://localhost:3000/cards?#/reset-password/$token$'>link</a></div>`;
-
-    const isSuccessful = await dispatch(
-      authThunks.forgotPassword({ email, from, message })
-    );
-    setIsSuccessful(isSuccessful);
+  const onSuccesfull = (email: string) => {
+    setSuccessfullEmail(email);
   };
 
-  if (isSuccessful) {
-    return <Navigate to="/" />;
+  if (successfullEmail) {
+    return <CheckEmailScreen email={successfullEmail} />;
   }
 
   return (
-    <div className={s.wrapper}>
-      <h1>Forgot Password</h1>
-      <form onSubmit={handleSubmit(onSubmit)} className={s.form}>
-        <div className={s.fieldsContainer}>
-          <TextField
-            label={errors.email ? errors.email.message : "Email"}
-            variant="standard"
-            {...register("email")}
-            error={!!errors.email}
-          />
-        </div>
-        <LoadingButton
-          type="submit"
-          className={s.button}
-          loading={isSubmitting}
-          loadingPosition="start"
-          variant="contained"
-          startIcon={<></>}
-        >
-          Forgot
-        </LoadingButton>
-      </form>
-    </div>
+    <Wrapper>
+      <h1>Forgot your password?</h1>
+      <FormContainer>
+        <ForgotPasswordForm onSuccessful={onSuccesfull} />
+      </FormContainer>
+      <TryLoggingInContainer>
+        <SignInText>Did you remember your password?</SignInText>
+        <SignInLink to={PATHS.signin}>Try logging in</SignInLink>
+      </TryLoggingInContainer>
+    </Wrapper>
   );
-};
-
-type Inputs = {
-  email: string;
-  from: string;
-  message: string;
 };

@@ -1,18 +1,17 @@
 import {
   authApi,
   LoginParamsType,
-  LoginResponseType,
   RegisterParamsType,
-  ResetParamsType,
-  ResetPasswordType,
+  SendRestorePasswordTokenParamsType,
+  SetNewPasswordParamsType,
+  UpdateUserParamsType,
+  UserType,
 } from "../api/auth-api";
 import { handleApiError } from "../utils/handle-api-error";
 import { appActions } from "./app-reducer";
 import { AppThunk, InferActionTypes } from "./store";
 
-const initialState: AuthStateType = {
-  user: null,
-};
+const initialState: AuthStateType = { user: null };
 
 export const authReducer = (
   state = initialState,
@@ -24,6 +23,7 @@ export const authReducer = (
         ...state,
         ...action.payload,
       };
+
     default: {
       return state;
     }
@@ -38,14 +38,14 @@ export const authActions = {
 };
 
 export const authThunks = {
-  signUp:
+  signup:
     (data: RegisterParamsType): AppThunk<Promise<boolean>> =>
     async (dispatch) => {
       let isSuccessful = false;
 
       dispatch(appActions.setIsLoading(true));
       try {
-        await authApi.register(data);
+        await authApi.signup(data);
         dispatch(appActions.setSnackbarMessage("Sign up successfully"));
         isSuccessful = true;
       } catch (e) {
@@ -56,28 +56,16 @@ export const authThunks = {
 
       return isSuccessful;
     },
-  signIn:
-    (data: LoginParamsType): AppThunk =>
+  signin:
+    (data: LoginParamsType): AppThunk<Promise<boolean>> =>
     async (dispatch) => {
+      let isSuccessful = false;
+
       dispatch(appActions.setIsLoading(true));
       try {
-        const user = await authApi.login(data);
+        const user = await authApi.signin(data);
         dispatch(authActions.setUser(user));
         dispatch(appActions.setSnackbarMessage("Sign in successfully"));
-      } catch (e) {
-        handleApiError(e, dispatch);
-      } finally {
-        dispatch(appActions.setIsLoading(false));
-      }
-    },
-  forgotPassword:
-    (data: ResetParamsType): AppThunk<Promise<boolean>> =>
-    async (dispatch) => {
-      let isSuccessful = false;
-      dispatch(appActions.setIsLoading(true));
-      try {
-        const reset = await authApi.forgotPassword(data);
-        dispatch(appActions.setSnackbarMessage(reset.info));
         isSuccessful = true;
       } catch (e) {
         handleApiError(e, dispatch);
@@ -87,27 +75,10 @@ export const authThunks = {
 
       return isSuccessful;
     },
-  resetPassword:
-    (data: ResetPasswordType): AppThunk<Promise<boolean>> =>
-    async (dispatch) => {
-      let isSuccessful = false;
-      dispatch(appActions.setIsLoading(true));
-      try {
-        const reset = await authApi.resetPassword(data);
-        dispatch(appActions.setSnackbarMessage(reset.info));
-        isSuccessful = true;
-      } catch (e) {
-        handleApiError(e, dispatch);
-      } finally {
-        dispatch(appActions.setIsLoading(false));
-      }
-
-      return isSuccessful;
-    },
-  logout: (): AppThunk => async (dispatch) => {
+  signout: (): AppThunk => async (dispatch) => {
     dispatch(appActions.setIsLoading(true));
     try {
-      await authApi.logout();
+      await authApi.signout();
       dispatch(authActions.setUser(null));
       dispatch(appActions.setSnackbarMessage("Log out successfully"));
     } catch (e) {
@@ -116,27 +87,68 @@ export const authThunks = {
       dispatch(appActions.setIsLoading(false));
     }
   },
-  changeData:
-    (data: { name: string }): AppThunk =>
+  sendRestorePasswordToken:
+    (data: SendRestorePasswordTokenParamsType): AppThunk<Promise<boolean>> =>
     async (dispatch) => {
-      if (!data.name) {
-        return;
-      }
+      let isSuccessful = false;
+
       dispatch(appActions.setIsLoading(true));
       try {
-        const user = await authApi.updateProfileData(data);
-        dispatch(authActions.setUser(user.updatedUser));
-        console.log(user.updatedUser.name);
-        dispatch(appActions.setSnackbarMessage("Change name successfully"));
+        await authApi.sendRestorePasswordToken(data);
+        dispatch(appActions.setSnackbarMessage("Please, check your email"));
+        isSuccessful = true;
       } catch (e) {
         handleApiError(e, dispatch);
       } finally {
         dispatch(appActions.setIsLoading(false));
       }
+
+      return isSuccessful;
+    },
+  setNewPassword:
+    (data: SetNewPasswordParamsType): AppThunk<Promise<boolean>> =>
+    async (dispatch) => {
+      let isSuccessful = false;
+
+      dispatch(appActions.setIsLoading(true));
+      try {
+        await authApi.setNewPassword(data);
+        dispatch(
+          appActions.setSnackbarMessage("Set new password successfully")
+        );
+        isSuccessful = true;
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
+
+      return isSuccessful;
+    },
+  updateUser:
+    (data: UpdateUserParamsType): AppThunk<Promise<boolean>> =>
+    async (dispatch) => {
+      let isSuccessful = false;
+
+      dispatch(appActions.setIsLoading(true));
+      try {
+        const { updatedUser } = await authApi.updateUser(data);
+        dispatch(authActions.setUser(updatedUser));
+        dispatch(
+          appActions.setSnackbarMessage("User info updated successfully")
+        );
+        isSuccessful = true;
+      } catch (e) {
+        handleApiError(e, dispatch);
+      } finally {
+        dispatch(appActions.setIsLoading(false));
+      }
+
+      return isSuccessful;
     },
 };
 
-type UserDomainType = null | LoginResponseType;
+type UserDomainType = null | UserType;
 
 export type AuthActionType = InferActionTypes<typeof authActions>;
 
