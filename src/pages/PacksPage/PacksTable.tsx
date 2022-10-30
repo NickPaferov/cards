@@ -76,11 +76,11 @@ export const PacksTable = () => {
   const handleDeletePack = (id: string) => async () => {
     const deletedCardsPack = await dispatch(packsThunks.deletePack({ id }));
 
-    if (!deletedCardsPack) {
+    if (!deletedCardsPack || !current) {
       return;
     }
 
-    current && current.items.length > 1
+    current.items.length > 1 || filters.page === 1
       ? dispatch(packsThunks.setCurrent())
       : dispatch(packsActions.setFilters({ page: 1 }));
   };
