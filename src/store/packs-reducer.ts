@@ -139,7 +139,6 @@ export const packsThunks = {
     (data: CreatePackParamsType): AppThunk<Promise<PackType | void>> =>
     async (dispatch) => {
       dispatch(appActions.setIsLoading(true));
-
       try {
         const { newCardsPack } = await packsApi.createPack(data);
         dispatch(
@@ -147,7 +146,6 @@ export const packsThunks = {
             `Pack "${newCardsPack.name}" was created`
           )
         );
-
         return newCardsPack;
       } catch (e) {
         handleApiError(e, dispatch);
@@ -209,7 +207,7 @@ export type FiltersType = {
   showMyPacks?: boolean;
 };
 
-type PackDomainType = PackType & { isMyPack: boolean };
+export type PackDomainType = PackType & { isMyPack: boolean };
 
 type CurrentType = null | {
   items: PackDomainType[];

@@ -1,5 +1,4 @@
 import styled from "@emotion/styled";
-import { Button } from "@mui/material";
 import _ from "lodash";
 import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
@@ -9,6 +8,10 @@ import { packsActions, packsThunks } from "../../store/packs-reducer";
 import { convertString } from "../../utils/convertString";
 import { PacksFilters } from "./PacksFilters";
 import { PacksTable } from "./PacksTable";
+import { AddPackModal } from "../../components/Modal/AddPackModal";
+import { useModal } from "../../hooks/useModal";
+import Button from "@mui/material/Button";
+import * as React from "react";
 
 const HeaderContainer = styled.div`
   display: flex;
@@ -29,6 +32,7 @@ export const PacksPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isInit, setIsInit] = useState(false);
   const setSearchParamsRef = useRef(setSearchParams);
+  const { open, openModal, closeModal } = useModal();
 
   useEffect(() => {
     return () => {
@@ -68,21 +72,26 @@ export const PacksPage = () => {
       );
   }, [filters, isInit, setSearchParamsRef]);
 
-  const handleAddNewPack = async () => {
+  const handleAddNewPack = async (value: string, privateCard: boolean) => {
     (await dispatch(
-      packsThunks.createPack({ name: `New pack ${Date.now()}` })
+      packsThunks.createPack({ name: value, private: privateCard })
     )) && dispatch(packsThunks.setCurrent());
+    closeModal();
   };
 
   return (
     <>
       <HeaderContainer>
         <h1>Packs list</h1>
-        <Button
-          variant="contained"
-          disabled={isLoading}
-          onClick={handleAddNewPack}
-        >
+        <AddPackModal
+          label="Name pack"
+          isLoading={isLoading}
+          handleAddNewPack={handleAddNewPack}
+          initialValue={""}
+          open={open}
+          closeModal={closeModal}
+        />
+        <Button variant="contained" disabled={isLoading} onClick={openModal}>
           Add new pack
         </Button>
       </HeaderContainer>

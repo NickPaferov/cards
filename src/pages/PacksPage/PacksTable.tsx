@@ -13,13 +13,17 @@ import {
 } from "@mui/material";
 import styled from "@emotion/styled";
 import { useAppSelector } from "../../hooks/useAppSelector";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { packsActions, packsThunks } from "../../store/packs-reducer";
 import { TableRowsSkeleton } from "../../components/TableRowsSkeleton";
 import { Delete, ModeEdit, School } from "@mui/icons-material";
 import { PATHS } from "../../app/AppRoutes";
 import { Link } from "react-router-dom";
+import { useModal } from "../../hooks/useModal";
+import * as React from "react";
+import { EditPackModal } from "../../components/Modal/EditPackModal";
+import { DeletePackModal } from "../../components/Modal/DeletePackModal";
 
 const PaginationContainer = styled.div`
   margin-top: 30px;
@@ -43,6 +47,18 @@ export const PacksTable = () => {
   const filters = useAppSelector((state) => state.packs.filters);
   const dispatch = useAppDispatch();
   const activeSort = getActiveSortColumn(filters.sortPacks || "0updated");
+  const [modalId, setModalId] = useState<string>("");
+  const [modalTitle, setModalTitle] = useState<string>("");
+  const [modalPrivate, setModalPrivate] = useState<boolean>(false);
+  const [modalCardsCount, setModalCardsCount] = useState<number>(0);
+  const {
+    open,
+    openModal,
+    closeModal,
+    openEdit,
+    openEditModal,
+    closeEditModal,
+  } = useModal();
 
   const handleRowsPerPageChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -73,7 +89,7 @@ export const PacksTable = () => {
     dispatch(packsActions.setFilters({ sortPacks: domainDirection + column }));
   };
 
-  const handleDeletePack = (id: string) => async () => {
+  const handleDeletePack = async (id: string) => {
     const deletedCardsPack = await dispatch(packsThunks.deletePack({ id }));
 
     if (!deletedCardsPack || !current) {
@@ -85,15 +101,41 @@ export const PacksTable = () => {
       : dispatch(packsActions.setFilters({ page: 1 }));
   };
 
-  const handleEditPack = (id: string) => {
-    return async () => {
-      (await dispatch(
-        packsThunks.updatePack({
-          _id: id,
-          name: `Edited pack ${Date.now()}`,
-        })
-      )) && dispatch(packsThunks.setCurrent());
-    };
+  const handleOpenModalEdit = (
+    id: string,
+    title: string,
+    privateCard: boolean
+  ) => {
+    setModalId(id);
+    setModalTitle(title);
+    setModalPrivate(privateCard!);
+    openEditModal();
+  };
+
+  const handleOpenModalDelete = (
+    id: string,
+    title: string,
+    cardsCount: number
+  ) => {
+    setModalId(id);
+    setModalTitle(title);
+    setModalCardsCount(cardsCount!);
+    openModal();
+  };
+
+  const handleEditPack = async (
+    id: string,
+    title: string,
+    privateCard: boolean
+  ) => {
+    (await dispatch(
+      packsThunks.updatePack({
+        _id: id,
+        name: title,
+        private: privateCard,
+      })
+    )) && dispatch(packsThunks.setCurrent());
+    closeEditModal();
   };
 
   return (
@@ -191,14 +233,18 @@ export const PacksTable = () => {
                       <>
                         <IconButton
                           disabled={isLoading}
-                          onClick={handleEditPack(v._id)}
+                          onClick={() => {
+                            handleOpenModalEdit(v._id, v.name, v.private);
+                          }}
                           size="small"
                         >
                           <ModeEdit />
                         </IconButton>
                         <IconButton
                           disabled={isLoading}
-                          onClick={handleDeletePack(v._id)}
+                          onClick={() =>
+                            handleOpenModalDelete(v._id, v.name, v.cardsCount)
+                          }
                           size="small"
                         >
                           <Delete />
@@ -208,6 +254,25 @@ export const PacksTable = () => {
                   </TableCell>
                 </TableRow>
               ))}
+            <EditPackModal
+              label="Name pack"
+              initialValue={modalTitle}
+              privateValue={modalPrivate}
+              isLoading={isLoading}
+              handleEditPack={(title, privateCard) =>
+                handleEditPack(modalId, title, privateCard)
+              }
+              open={openEdit}
+              closeModal={closeEditModal}
+            />
+            <DeletePackModal
+              initialValue={modalTitle}
+              isLoading={isLoading}
+              cardsCount={modalCardsCount}
+              handleDeletePack={() => handleDeletePack(modalId)}
+              open={open}
+              closeModal={closeModal}
+            />
             {!isLoading && !current?.items.length && (
               <TableRow
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
