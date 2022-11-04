@@ -237,7 +237,7 @@ export const CardsTable = (props: PropsType) => {
                     })}
                   </TableCell>
                   <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }}>
-                    <Rating value={v.grade} readOnly />
+                    <Rating value={v.grade} readOnly precision={0.5} />
                   </TableCell>
                   {current.isMyPack && (
                     <TableCell
