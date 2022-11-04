@@ -24,6 +24,11 @@ import { packsThunks } from "../../store/packs-reducer";
 import { PATHS } from "../../app/AppRoutes";
 import { convertString } from "../../utils/convertString";
 import _ from "lodash";
+import * as React from "react";
+import { useModal } from "../../hooks/useModal";
+import { AddCardModal } from "../../components/Modal/AddCardModal";
+import { EditPackModal } from "../../components/Modal/EditPackModal";
+import { DeletePackModal } from "../../components/Modal/DeletePackModal";
 
 const HeaderWrapper = styled.div`
   display: flex;
@@ -74,6 +79,17 @@ export const CardsPage = () => {
   const [isChangePackLoading, setIsChangePackLoading] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
   const setSearchParamsRef = useRef(setSearchParams);
+  const {
+    openAdd,
+    openDelete,
+    openAddModal,
+    closeAddModal,
+    openDeleteModal,
+    closeDeleteModal,
+    openEdit,
+    openEditModal,
+    closeEditModal,
+  } = useModal();
 
   useEffect(() => {
     return () => {
@@ -126,7 +142,7 @@ export const CardsPage = () => {
     setAnchorEl(null);
   };
 
-  const handleAddCard = async () => {
+  const handleAddCard = async (question: string, answer: string) => {
     if (!packId) {
       return;
     }
@@ -134,16 +150,18 @@ export const CardsPage = () => {
     const newCard = await dispatch(
       cardsThunks.createCard({
         cardsPack_id: packId,
-        question: `New question ${Date.now()}`,
+        question,
+        answer,
       })
     );
 
     newCard && dispatch(cardsThunks.setCurrent(packId));
+    closeAddModal();
   };
 
   const handleLearnPack = () => {};
 
-  const handleEditPack = async () => {
+  const handleEditPack = async (title: string, privateCard: boolean) => {
     if (!packId) {
       return;
     }
@@ -153,13 +171,15 @@ export const CardsPage = () => {
     const updatedCardsPack = await dispatch(
       packsThunks.updatePack({
         _id: packId,
-        name: `Edited pack ${Date.now()}`,
+        name: title,
+        private: privateCard,
       })
     );
 
     setIsChangePackLoading(false);
 
     updatedCardsPack && setEditedPackName(updatedCardsPack.name);
+    closeEditModal();
   };
 
   const handleDeletePack = async () => {
@@ -176,6 +196,7 @@ export const CardsPage = () => {
     setIsChangePackLoading(false);
 
     deletedCardsPack && navigate(PATHS.packs, { replace: true });
+    closeDeleteModal();
   };
 
   return (
@@ -189,11 +210,17 @@ export const CardsPage = () => {
             </IconButton>
           )}
         </HeaderContainer>
+        <AddCardModal
+          isLoading={isLoading}
+          handleAddNewCard={handleAddCard}
+          open={openAdd}
+          closeModal={closeAddModal}
+        />
         {!!current.cardsTotalCount && (
           <Button
             variant="contained"
             disabled={isLoading}
-            onClick={!current.isMyPack ? handleLearnPack : handleAddCard}
+            onClick={!current.isMyPack ? handleLearnPack : openAddModal}
           >
             {!current.isMyPack ? "Learn to pack" : "Add new card"}
           </Button>
@@ -209,7 +236,7 @@ export const CardsPage = () => {
           {current.isMyPack && (
             <Button
               variant="contained"
-              onClick={handleAddCard}
+              onClick={openAddModal}
               disabled={isLoading}
             >
               Add new card
@@ -225,20 +252,36 @@ export const CardsPage = () => {
           />
         </>
       )}
-
+      <EditPackModal
+        label="Name pack"
+        initialValue={current.packName}
+        privateValue={current.packPrivate}
+        isLoading={isLoading}
+        handleEditPack={handleEditPack}
+        open={openEdit}
+        closeModal={closeEditModal}
+      />
+      <DeletePackModal
+        initialValue={current.packName}
+        isLoading={isLoading}
+        cardsCount={current.cardsTotalCount}
+        handleDeletePack={handleDeletePack}
+        open={openDelete}
+        closeModal={closeDeleteModal}
+      />
       <DropDownMenu
         anchorEl={anchorEl}
         handleClose={handleMenuClose}
         transformOrigin={{ horizontal: "right", vertical: "top" }}
         anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
       >
-        <MenuItem onClick={handleEditPack}>
+        <MenuItem onClick={openEditModal}>
           <ListItemIcon>
             <ModeEdit />
           </ListItemIcon>
           Edit
         </MenuItem>
-        <MenuItem onClick={handleDeletePack}>
+        <MenuItem onClick={openDeleteModal}>
           <ListItemIcon>
             <Delete />
           </ListItemIcon>

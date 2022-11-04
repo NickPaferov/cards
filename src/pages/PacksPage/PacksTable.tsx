@@ -52,9 +52,9 @@ export const PacksTable = () => {
   const [modalPrivate, setModalPrivate] = useState<boolean>(false);
   const [modalCardsCount, setModalCardsCount] = useState<number>(0);
   const {
-    open,
-    openModal,
-    closeModal,
+    openDelete,
+    openDeleteModal,
+    closeDeleteModal,
     openEdit,
     openEditModal,
     closeEditModal,
@@ -99,6 +99,7 @@ export const PacksTable = () => {
     current.items.length > 1 || filters.page === 1
       ? dispatch(packsThunks.setCurrent())
       : dispatch(packsActions.setFilters({ page: 1 }));
+    closeDeleteModal();
   };
 
   const handleOpenModalEdit = (
@@ -120,7 +121,7 @@ export const PacksTable = () => {
     setModalId(id);
     setModalTitle(title);
     setModalCardsCount(cardsCount!);
-    openModal();
+    openDeleteModal();
   };
 
   const handleEditPack = async (
@@ -233,9 +234,9 @@ export const PacksTable = () => {
                       <>
                         <IconButton
                           disabled={isLoading}
-                          onClick={() => {
-                            handleOpenModalEdit(v._id, v.name, v.private);
-                          }}
+                          onClick={() =>
+                            handleOpenModalEdit(v._id, v.name, v.private)
+                          }
                           size="small"
                         >
                           <ModeEdit />
@@ -270,8 +271,8 @@ export const PacksTable = () => {
               isLoading={isLoading}
               cardsCount={modalCardsCount}
               handleDeletePack={() => handleDeletePack(modalId)}
-              open={open}
-              closeModal={closeModal}
+              open={openDelete}
+              closeModal={closeDeleteModal}
             />
             {!isLoading && !current?.items.length && (
               <TableRow

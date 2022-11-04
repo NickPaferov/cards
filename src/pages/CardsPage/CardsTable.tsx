@@ -14,11 +14,15 @@ import {
   TableRow,
   TableSortLabel,
 } from "@mui/material";
-import { ChangeEvent } from "react";
+import { ChangeEvent, useState } from "react";
 import { TableRowsSkeleton } from "../../components/TableRowsSkeleton";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import { cardsActions, cardsThunks } from "../../store/cards-reducer";
+import * as React from "react";
+import { EditCardModal } from "../../components/Modal/EditCardModal";
+import { useModal } from "../../hooks/useModal";
+import { DeleteCardModal } from "../../components/Modal/DeleteCardModal";
 
 const PaginationContainer = styled.div`
   margin-top: 30px;
@@ -42,6 +46,35 @@ export const CardsTable = (props: PropsType) => {
   const filters = useAppSelector((state) => state.cards.filters);
   const dispatch = useAppDispatch();
   const activeSort = getActiveSortColumn(filters.sortCards || "0updated");
+  const [modalId, setModalId] = useState<string>("");
+  const [modalQuestion, setModalQuestion] = useState<string>("");
+  const [modalAnswer, setModalAnswer] = useState<string>("");
+  const [modalCardsName, setModalCardsName] = useState<string>("");
+  const {
+    openDelete,
+    openDeleteModal,
+    closeDeleteModal,
+    openEdit,
+    openEditModal,
+    closeEditModal,
+  } = useModal();
+
+  const handleOpenModalEdit = (
+    id: string,
+    oldQuestion: string,
+    oldAnswer: string
+  ) => {
+    setModalId(id);
+    setModalQuestion(oldQuestion);
+    setModalAnswer(oldAnswer!);
+    openEditModal();
+  };
+
+  const handleOpenModalDelete = (id: string, title: string) => {
+    setModalId(id);
+    setModalCardsName(title);
+    openDeleteModal();
+  };
 
   const isTableLoading = isLoading && !props.isChangePackLoading;
 
@@ -74,11 +107,16 @@ export const CardsTable = (props: PropsType) => {
     dispatch(cardsActions.setFilters({ sortCards: domainDirection + column }));
   };
 
-  const handleEditCard = (id: string) => async () => {
+  const handleEditCard = async (
+    id: string,
+    question: string,
+    answer: string
+  ) => {
     const updatedCard = await dispatch(
       cardsThunks.updateCard({
         _id: id,
-        question: `Edited question ${Date.now()}`,
+        question,
+        answer,
       })
     );
 
@@ -87,9 +125,10 @@ export const CardsTable = (props: PropsType) => {
     }
 
     dispatch(cardsThunks.setCurrent(props.packId));
+    closeEditModal();
   };
 
-  const handleDeleteCard = (id: string) => async () => {
+  const handleDeleteCard = async (id: string) => {
     const deletedCard = await dispatch(cardsThunks.deleteCard({ id }));
 
     if (!deletedCard || !props.packId || !current) {
@@ -99,6 +138,7 @@ export const CardsTable = (props: PropsType) => {
     current.items.length > 1 || filters.page === 1
       ? dispatch(cardsThunks.setCurrent(props.packId))
       : dispatch(cardsActions.setFilters({ page: 1 }));
+    closeDeleteModal();
   };
 
   return (
@@ -190,14 +230,16 @@ export const CardsTable = (props: PropsType) => {
                     <TableCell>
                       <IconButton
                         disabled={isTableLoading}
-                        onClick={handleEditCard(v._id)}
+                        onClick={() => {
+                          handleOpenModalEdit(v._id, v.question, v.answer);
+                        }}
                         size="small"
                       >
                         <ModeEdit />
                       </IconButton>
                       <IconButton
                         disabled={isTableLoading}
-                        onClick={handleDeleteCard(v._id)}
+                        onClick={() => handleOpenModalDelete(v._id, v.question)}
                         size="small"
                       >
                         <Delete />
@@ -206,6 +248,24 @@ export const CardsTable = (props: PropsType) => {
                   )}
                 </TableRow>
               ))}
+            <EditCardModal
+              oldAnswer={modalAnswer}
+              oldQuestion={modalQuestion}
+              isLoading={isLoading}
+              handleEditCard={(question, answer) =>
+                handleEditCard(modalId, question, answer)
+              }
+              open={openEdit}
+              closeModal={closeEditModal}
+            />
+            <DeleteCardModal
+              initialValue={modalCardsName}
+              isLoading={isLoading}
+              handleDeleteCard={() => handleDeleteCard(modalId)}
+              open={openDelete}
+              closeModal={closeDeleteModal}
+            />
+
             {!isTableLoading && !current?.items.length && (
               <TableRow
                 sx={{ "&:last-child td, &:last-child th": { border: 0 } }}

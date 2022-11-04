@@ -32,7 +32,7 @@ export const PacksPage = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [isInit, setIsInit] = useState(false);
   const setSearchParamsRef = useRef(setSearchParams);
-  const { open, openModal, closeModal } = useModal();
+  const { openAdd, openAddModal, closeAddModal } = useModal();
 
   useEffect(() => {
     return () => {
@@ -76,7 +76,7 @@ export const PacksPage = () => {
     (await dispatch(
       packsThunks.createPack({ name: value, private: privateCard })
     )) && dispatch(packsThunks.setCurrent());
-    closeModal();
+    closeAddModal();
   };
 
   return (
@@ -88,10 +88,10 @@ export const PacksPage = () => {
           isLoading={isLoading}
           handleAddNewPack={handleAddNewPack}
           initialValue={""}
-          open={open}
-          closeModal={closeModal}
+          open={openAdd}
+          closeModal={closeAddModal}
         />
-        <Button variant="contained" disabled={isLoading} onClick={openModal}>
+        <Button variant="contained" disabled={isLoading} onClick={openAddModal}>
           Add new pack
         </Button>
       </HeaderContainer>

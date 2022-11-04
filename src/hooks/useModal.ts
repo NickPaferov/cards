@@ -1,24 +1,28 @@
 import { useState } from "react";
 
 interface ReturnType {
-  open: boolean;
+  openAdd: boolean;
   openEdit: boolean;
-  openModal: () => void;
-  closeModal: () => void;
+  openDelete: boolean;
+  openDeleteModal: () => void;
+  closeDeleteModal: () => void;
+  openAddModal: () => void;
+  closeAddModal: () => void;
   closeEditModal: () => void;
   openEditModal: () => void;
 }
 
 export const useModal = (): ReturnType => {
-  const [open, setOpen] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openDelete, setOpenDelete] = useState(false);
 
-  const closeModal = (): void => {
-    setOpen(false);
+  const closeAddModal = (): void => {
+    setOpenAdd(false);
   };
 
-  const openModal = (): void => {
-    setOpen(true);
+  const openAddModal = (): void => {
+    setOpenAdd(true);
   };
 
   const closeEditModal = (): void => {
@@ -29,12 +33,23 @@ export const useModal = (): ReturnType => {
     setOpenEdit(true);
   };
 
+  const closeDeleteModal = (): void => {
+    setOpenDelete(false);
+  };
+
+  const openDeleteModal = (): void => {
+    setOpenDelete(true);
+  };
+
   return {
-    open,
+    openAdd,
     openEdit,
-    closeModal,
-    openModal,
+    openDelete,
+    closeAddModal,
+    openAddModal,
     closeEditModal,
     openEditModal,
+    closeDeleteModal,
+    openDeleteModal,
   };
 };
