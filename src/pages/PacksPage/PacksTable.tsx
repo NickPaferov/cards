@@ -208,12 +208,17 @@ export const PacksTable = () => {
                       paddingTop: 0,
                       paddingBottom: 0,
                     },
-                    "& td button:first-of-type": {
-                      marginLeft: -1,
+                    "& td:last-child > *": {
+                      position: "relative",
+                      left: "-8px",
                     },
                   }}
                 >
-                  <TableCell>
+                  <TableCell
+                    sx={{
+                      wordBreak: "break-all",
+                    }}
+                  >
                     <Link to={`${PATHS.packs}/${v._id}`}>{v.name}</Link>
                   </TableCell>
                   <TableCell>{v.cardsCount}</TableCell>
@@ -223,10 +228,25 @@ export const PacksTable = () => {
                       timeStyle: "short",
                     })}
                   </TableCell>
-                  <TableCell>{v.user_name}</TableCell>
-                  <TableCell>
+                  <TableCell
+                    sx={{
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {v.user_name}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      whiteSpace: "nowrap",
+                    }}
+                  >
                     {!!v.cardsCount && (
-                      <IconButton disabled={isLoading} size="small">
+                      <IconButton
+                        disabled={isLoading}
+                        size="small"
+                        component={Link}
+                        to={`${PATHS.learn}/${v._id}`}
+                      >
                         <School />
                       </IconButton>
                     )}

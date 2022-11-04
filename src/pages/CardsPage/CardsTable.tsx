@@ -210,13 +210,26 @@ export const CardsTable = (props: PropsType) => {
                       paddingTop: 0,
                       paddingBottom: 0,
                     },
-                    "& td button:first-of-type": {
-                      marginLeft: -1,
+                    "& td:last-child > *": {
+                      position: "relative",
+                      left: "-8px",
                     },
                   }}
                 >
-                  <TableCell>{v.question}</TableCell>
-                  <TableCell>{v.answer}</TableCell>
+                  <TableCell
+                    sx={{
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {v.question}
+                  </TableCell>
+                  <TableCell
+                    sx={{
+                      wordBreak: "break-all",
+                    }}
+                  >
+                    {v.answer}
+                  </TableCell>
                   <TableCell>
                     {new Date(v.updated).toLocaleString("ru-RU", {
                       dateStyle: "short",
@@ -224,10 +237,14 @@ export const CardsTable = (props: PropsType) => {
                     })}
                   </TableCell>
                   <TableCell sx={{ paddingTop: 0, paddingBottom: 0 }}>
-                    <Rating value={v.grade} onChange={() => {}} />
+                    <Rating value={v.grade} readOnly />
                   </TableCell>
                   {current.isMyPack && (
-                    <TableCell>
+                    <TableCell
+                      sx={{
+                        whiteSpace: "nowrap",
+                      }}
+                    >
                       <IconButton
                         disabled={isTableLoading}
                         onClick={() => {

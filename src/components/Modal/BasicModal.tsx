@@ -33,7 +33,7 @@ export const BasicModal = ({
   nameButton,
 }: PropsType) => {
   return (
-    <div>
+    <>
       <Modal
         aria-labelledby="transition-modal-title"
         aria-describedby="transition-modal-description"
@@ -63,7 +63,7 @@ export const BasicModal = ({
           </Box>
         </Fade>
       </Modal>
-    </div>
+    </>
   );
 };
 

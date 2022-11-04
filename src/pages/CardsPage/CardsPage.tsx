@@ -7,7 +7,12 @@ import {
   MenuItem,
 } from "@mui/material";
 import { useEffect, useState, MouseEvent, useRef } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from "react-router-dom";
 import { useAppDispatch } from "../../hooks/useAppDispatch";
 import { useAppSelector } from "../../hooks/useAppSelector";
 import {
@@ -159,8 +164,6 @@ export const CardsPage = () => {
     closeAddModal();
   };
 
-  const handleLearnPack = () => {};
-
   const handleEditPack = async (title: string, privateCard: boolean) => {
     if (!packId) {
       return;
@@ -220,7 +223,9 @@ export const CardsPage = () => {
           <Button
             variant="contained"
             disabled={isLoading}
-            onClick={!current.isMyPack ? handleLearnPack : openAddModal}
+            {...(current.isMyPack
+              ? { onClick: openAddModal }
+              : { component: Link, to: `${PATHS.learn}/${packId}` })}
           >
             {!current.isMyPack ? "Learn to pack" : "Add new card"}
           </Button>
@@ -287,7 +292,7 @@ export const CardsPage = () => {
           </ListItemIcon>
           Delete
         </MenuItem>
-        <MenuItem onClick={handleLearnPack}>
+        <MenuItem component={Link} to={`${PATHS.learn}/${packId}`}>
           <ListItemIcon>
             <School />
           </ListItemIcon>
